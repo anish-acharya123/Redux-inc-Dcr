@@ -1,25 +1,92 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import "./App.css";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  incNumber,
+  decNumber,
+  changeBgBlack,
+  changeBgWhite,
+} from "./actions/index";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+//to get the data from Ls
+const getLocalItems = () => {
+  let color = localStorage.getItem("color");
+  // let count = localStorage.getItem("count");
+  if (color) {
+    return JSON.parse(localStorage.getItem("color")); //conveting data in array form
+  } else {
+    return [];
+  }
+};
+
+const App = () => {
+  document.body.style.backgroundColor = getLocalItems();
+  const myState = useSelector((state) => {
+    return state.changeTheNumber;
+  });
+  const myColor = useSelector((state) => {
+    return state.changeBackground;
+  });
+
+  //add data to local storage
+  useEffect(
+    () => {
+      localStorage.setItem("color", JSON.stringify(myColor));
+      localStorage.setItem("count", JSON.stringify(myState));
+    },
+    [myColor],
+    [myState]
   );
-}
+
+  const dispatch = useDispatch();
+
+  return (
+    <>
+      <div className="container">
+        <h1>Increment/Decrement counter</h1>
+        <h4>Using React and Redux</h4>
+
+        <div className="quantity">
+          <a
+            className="quantity__minus"
+            title="Decrement"
+            onClick={() => dispatch(decNumber())}
+          >
+            <span>-</span>
+          </a>
+          <input
+            type="text"
+            name="quantity"
+            value={myState}
+            className="quantity__input"
+          />
+          <a
+            className="quantity__plus"
+            title="Increment"
+            onClick={() => dispatch(incNumber())}
+          >
+            <span>+</span>
+          </a>
+        </div>
+        <div className="changeColor">
+          <button
+            onClick={() => {
+              dispatch(changeBgBlack());
+            }}
+          >
+            Black
+          </button>
+          <button
+            onClick={() => {
+              dispatch(changeBgWhite());
+            }}
+          >
+            White
+          </button>
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default App;
