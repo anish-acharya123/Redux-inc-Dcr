@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -11,7 +11,7 @@ import {
 //to get the data from Ls
 const getLocalItems = () => {
   let color = localStorage.getItem("color");
-  // let count = localStorage.getItem("count");
+
   if (color) {
     return JSON.parse(localStorage.getItem("color")); //conveting data in array form
   } else {
@@ -20,6 +20,8 @@ const getLocalItems = () => {
 };
 
 const App = () => {
+  const [flag, setFlag] = useState(false);
+
   document.body.style.backgroundColor = getLocalItems();
   const myState = useSelector((state) => {
     return state.changeTheNumber;
@@ -29,14 +31,15 @@ const App = () => {
   });
 
   //add data to local storage
-  useEffect(
-    () => {
-      localStorage.setItem("color", JSON.stringify(myColor));
-      localStorage.setItem("count", JSON.stringify(myState));
-    },
-    [myColor],
-    [myState]
-  );
+  useEffect(() => {
+    localStorage.setItem("color", JSON.stringify(myColor));
+  }, [myColor]);
+
+  useEffect(() => {
+    if (flag === true) {
+      dispatch(changeBgWhite());
+    } else dispatch(changeBgBlack());
+  });
 
   const dispatch = useDispatch();
 
@@ -71,14 +74,14 @@ const App = () => {
         <div className="changeColor">
           <button
             onClick={() => {
-              dispatch(changeBgBlack());
+              setFlag(false);
             }}
           >
             Black
           </button>
           <button
             onClick={() => {
-              dispatch(changeBgWhite());
+              setFlag(true);
             }}
           >
             White
